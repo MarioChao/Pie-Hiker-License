@@ -1,0 +1,13 @@
+{
+  "name": "Pie-Hiker-License",
+  "tree": {
+    "$className": "DataModel",
+
+    "StarterPack": {
+      "Pie Hiker License": {
+        "$path": "src/Pie-Hiker-License"
+      }
+    }
+  },
+  "emitLegacyScripts": true
+}
