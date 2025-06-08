@@ -9,7 +9,7 @@ local RunService = game:GetService("RunService")
 -- If not a model
 if script.Parent.Parent then
 	if RunService:IsServer() then
-		-- For dynamic data loading, add a line that requires the asset id 106825359403933
+		-- For dynamic data loading, add a line that `requires` the asset id 106825359403933 and `returns` the result
 	else
 		local RankThreshold_RemoteFunction = script:WaitForChild("RankThreshold_RemoteFunction")
 		return RankThreshold_RemoteFunction:InvokeServer("Get Rank Thresholds")
