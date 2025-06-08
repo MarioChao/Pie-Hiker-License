@@ -30,6 +30,12 @@ local Default_PieHikerLicense_ScreenGui = ToolAssets:WaitForChild("PieHikerLicen
 local PieHikerLicense_ScreenGui: typeof(Default_PieHikerLicense_ScreenGui)
 
 
+---------- Variables  ----------
+
+local badgeTierIds = RankThresholds.badgeTierIds
+local rankThresholds = RankThresholds.rankThresholds
+
+
 ---------- Helper functions ----------
 
 local function getPlayerThumbnail(player: Player): (string, boolean)
@@ -58,12 +64,12 @@ local function countBadges(player: Player, badgeIds: {number})
 end
 
 local function getRank()
-	for _, rankThreshold in RankThresholds.rankThresholds do
+	for _, rankThreshold in rankThresholds do
 		-- Check conditions
 		local conditionMet = true
 		for _, condition in rankThreshold.conditions do
 			-- Validate minimum badges
-			if countBadges(LocalPlayer, condition.badgeIds) < condition.minimumBadges then
+			if countBadges(LocalPlayer, badgeTierIds[condition.badgeTier]) < condition.minimumBadges then
 				conditionMet = false
 				break
 			end
@@ -132,18 +138,18 @@ local function setUpUserInterface()
 
 	-- Get new achievements
 	local achievements: {string} = {}
-	for tierNumber = 1, #RankThresholds.pieHikeBadgeIds do
+	for tier, badgeIds in badgeTierIds do
 		-- Validate non-empty
-		if #RankThresholds.pieHikeBadgeIds[tierNumber] == 0 then
+		if #badgeIds == 0 then
 			continue
 		end
 
 		-- Check badges
-		if hasAllBadges(LocalPlayer, RankThresholds.pieHikeBadgeIds[tierNumber]) then
-			table.insert(achievements, `All ({#RankThresholds.pieHikeBadgeIds[tierNumber]}) tier {tierNumber}.`)
+		if hasAllBadges(LocalPlayer,badgeIds) then
+			table.insert(achievements, `All ({#badgeIds}) tier {tier}.`)
 		else
-			local count = countBadges(LocalPlayer, RankThresholds.pieHikeBadgeIds[tierNumber])
-			table.insert(achievements, `({count}) tier {tierNumber}.`)
+			local count = countBadges(LocalPlayer, badgeIds)
+			table.insert(achievements, `({count}) tier {tier}.`)
 		end
 	end
 
