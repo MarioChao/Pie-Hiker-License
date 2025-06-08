@@ -1,16 +1,15 @@
 --!strict
--- Badge Check Module Script
+-- Badge Check Helper Module Script
 
 
 ---------- Module ----------
+
 local BadgeCheck = {}
 
 
 ---------- Services ----------
 
 local BadgeService = game:GetService("BadgeService")
-local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
 
 
 ---------- Types ----------
@@ -27,8 +26,7 @@ local _badgeBatchSize = 10
 
 -- Check badges using http endpoint (to be implemented)
 local function userHasBadges_http(userId: number, badgeIds: {number}): BadgeCheckResult
-	local response = HttpService:GetAsync("https://badges.roblox.com/v1/users/{userId}/badges/awarded-dates")
-	local data = HttpService:JSONDecode(response)
+	-- ServerInvoke + http request to a proxy to "https://badges.roblox.com/v1/users/{userId}/badges/awarded-dates"
 	return {}
 end
 
@@ -138,7 +136,7 @@ local function userHasBadges(userId: number, badgeIds: {number}): BadgeCheckResu
 	end
 
 	-- Use Http service
-	if false and RunService:IsServer() then
+	if false then
 		return userHasBadges_http(userId, badgeIds)
 	end
 
@@ -153,4 +151,5 @@ BadgeCheck.userHasBadges = userHasBadges
 
 
 ---------- Return module ----------
+
 return BadgeCheck

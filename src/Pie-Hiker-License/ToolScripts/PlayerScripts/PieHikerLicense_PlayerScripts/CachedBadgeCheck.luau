@@ -3,12 +3,13 @@
 
 
 ---------- Module ----------
+
 local CachedBadgeCheck = {}
 
 
 ---------- Imports ----------
 
-local BadgeCheckHelper = require(script.Parent.BadgeCheck)
+local BadgeCheckHelper = require(script.Parent.BadgeCheckHelper)
 
 
 ---------- Types ----------
@@ -167,4 +168,5 @@ task.defer(startCleanUp)
 
 
 ---------- Return module ----------
+
 return CachedBadgeCheck
