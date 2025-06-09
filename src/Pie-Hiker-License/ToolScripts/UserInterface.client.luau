@@ -129,13 +129,6 @@ local function setUpUserInterface()
 	local Template_TextLabel = List_ScrollingFrame.Template_TextLabel
 	Template_TextLabel.Visible = false
 
-	-- Clear old labels
-	for _, object in List_ScrollingFrame:GetChildren() do
-		if object:IsA("TextLabel") and object ~= Template_TextLabel then
-			Debris:AddItem(object, 0)
-		end
-	end
-
 	-- Get new achievements
 	local achievements: {string} = {}
 	for tier, badgeIds in badgeTierIds do
@@ -150,6 +143,13 @@ local function setUpUserInterface()
 		else
 			local count = countBadges(LocalPlayer, badgeIds)
 			table.insert(achievements, `({count}) tier {tier}.`)
+		end
+	end
+
+	-- Clear old labels
+	for _, object in List_ScrollingFrame:GetChildren() do
+		if object:IsA("TextLabel") and object ~= Template_TextLabel then
+			Debris:AddItem(object, 0)
 		end
 	end
 

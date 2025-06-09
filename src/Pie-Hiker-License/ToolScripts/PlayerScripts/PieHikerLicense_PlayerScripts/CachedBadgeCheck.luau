@@ -108,14 +108,16 @@ local function fetchAndCache(userId: number, badgeIds: {number})
 	-- Do a new fetch
 	local fetchStatuses = BadgeCheckHelper.userHasBadges(userId, badgeIds)
 
-	-- Cache result
+	-- Initialize player's cache
 	local badgeFetchInfos = userBadgeFetchInfos[userId]
 	if not badgeFetchInfos then
 		badgeFetchInfos = {} :: {[number]: BadgeFetchInfo}
 		userBadgeFetchInfos[userId] = badgeFetchInfos
 	end
-	for _, badgeId in badgeIds do
-		badgeFetchInfos[badgeId] = createFetchInfo(fetchStatuses[badgeId], _expire_seconds)
+
+	-- Cache successful results
+	for badgeId, result in fetchStatuses do
+		badgeFetchInfos[badgeId] = createFetchInfo(result, _expire_seconds)
 	end
 
 	-- Return result

@@ -24,10 +24,43 @@ local _badgeBatchSize = 10
 
 ---------- Local functions ----------
 
--- Check badges using http endpoint (to be implemented)
+-- Check badges using http endpoint (not implemented)
 local function userHasBadges_http(userId: number, badgeIds: {number}): BadgeCheckResult
 	-- ServerInvoke + http request to a proxy to "https://badges.roblox.com/v1/users/{userId}/badges/awarded-dates"
 	return {}
+end
+
+local function userHasBadges_badgeService_singleChecks(userId: number, badgeIds: {number}): BadgeCheckResult
+	-- Initialize result
+	local checkResult: BadgeCheckResult = {}
+
+	-- Go through each badge
+	local checkCount = 0
+	for _, badgeId in badgeIds do
+		task.defer(function()
+			-- Check badge
+			local success, result = pcall(function()
+				return BadgeService:UserHasBadgeAsync(userId, badgeId)
+			end)
+
+			-- Combine result
+			if success then
+				checkResult[badgeId] = result
+			end
+
+			-- Increment count
+			checkCount += 1
+		end)
+	end
+
+	-- Wait
+	local waitTime = time()
+	while checkCount < #badgeIds and time() < waitTime + 5 do
+		task.wait(0.05)
+	end
+
+	-- Return result
+	return checkResult
 end
 
 -- Check badges using badge service
@@ -37,36 +70,22 @@ local function userHasBadges_badgeService(userId: number, badgeIds: {number}): B
 		return {}
 	end
 
-	-- Only one badge id
-	if #badgeIds == 1 then
-		local badgeId = badgeIds[1]
-		local tries = 0
-		local success, result
-		repeat
-			success, result = pcall(function()
-				return BadgeService:UserHasBadgeAsync(userId, badgeId)
-			end)
-			tries += 1
-		until success or tries >= 5
-
-		-- Sanitize result
-		result = if success and result then true else false
-		return {[badgeId] = result}
+	-- A few badge ids
+	if #badgeIds <= _badgeBatchSize // 2 then
+		return userHasBadges_badgeService_singleChecks(userId, badgeIds)
 	end
 
 	-- At most batch-size badge ids
 	if #badgeIds <= _badgeBatchSize then
-		local tries = 0
-		local success, result
-		repeat
-			success, result = pcall(function()
-				return BadgeService:CheckUserBadgesAsync(userId, badgeIds)
-			end)
-			tries += 1
-		until success or tries >= 5
+		-- Check badges
+		local success, result = pcall(function()
+			return BadgeService:CheckUserBadgesAsync(userId, badgeIds)
+		end)
 
-		-- Sanitize result
-		result = if success then result else {}
+		-- Validate result
+		if not success then
+			return userHasBadges_badgeService_singleChecks(userId, badgeIds)
+		end
 
 
 		---------- Build check result ----------
