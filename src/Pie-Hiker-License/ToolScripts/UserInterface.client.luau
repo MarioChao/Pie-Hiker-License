@@ -35,6 +35,8 @@ local PieHikerLicense_ScreenGui: typeof(Default_PieHikerLicense_ScreenGui)
 local badgeTierIds = RankThresholds.badgeTierIds
 local rankThresholds = RankThresholds.rankThresholds
 
+local setUpUserInterface_throttle = false
+
 
 ---------- Helper functions ----------
 
@@ -90,11 +92,15 @@ end
 ---------- Local functions ----------
 
 local function setUpScreenGui()
+	-- Initialize screen gui
 	PieHikerLicense_ScreenGui = LocalPlayer.PlayerGui:FindFirstChild("PieHikerLicense_ScreenGui")
 	if not PieHikerLicense_ScreenGui then
 		PieHikerLicense_ScreenGui = Default_PieHikerLicense_ScreenGui:Clone()
 		PieHikerLicense_ScreenGui.Parent = LocalPlayer.PlayerGui
 	end
+
+	-- Enable screen gui
+	PieHikerLicense_ScreenGui.Enabled = true
 end
 
 local function setUpUserInterface()
@@ -102,9 +108,6 @@ local function setUpUserInterface()
 	if not PieHikerLicense_ScreenGui then
 		return
 	end
-
-	-- Enable screen gui
-	PieHikerLicense_ScreenGui.Enabled = true
 
 	-- Set avatar image
 	local thumbnailContent, thumbnailIsReady = getPlayerThumbnail(LocalPlayer)
@@ -172,7 +175,20 @@ end
 
 local function onToolEquipped(mouse: Mouse)
 	setUpScreenGui()
-	setUpUserInterface()
+
+	if not setUpUserInterface_throttle then
+		-- Throttle
+		setUpUserInterface_throttle = true
+
+		-- Function
+		setUpUserInterface()
+
+		-- Revert throttle
+		task.delay(1, function()
+			setUpUserInterface_throttle = false
+		end)
+	end
+
 end
 
 local function onToolUnequipped()
