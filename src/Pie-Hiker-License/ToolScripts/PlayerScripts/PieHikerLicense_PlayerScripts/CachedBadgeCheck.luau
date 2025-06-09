@@ -163,6 +163,10 @@ function CachedBadgeCheck.userHasBadges(userId: number, badgeIds: {number}): Bad
 	return checkResult
 end
 
+function CachedBadgeCheck.checkUserHasBadge(userId: number, badgeId: number)
+	return CachedBadgeCheck.userHasBadges(userId, {badgeId})[badgeId]
+end
+
 
 ---------- Call background functions ----------
 
