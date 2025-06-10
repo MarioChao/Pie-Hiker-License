@@ -24,6 +24,11 @@ local RankThresholds = {}
 
 ---------- Types ----------
 
+export type BadgeTierInfo = {
+	badgeId: number,
+	tier: number,
+}
+
 export type MinBadgeCondition = {
 	badgeTier: {number},
 	minimumBadges: number,
@@ -37,12 +42,33 @@ export type RankTreshold = {
 
 ---------- Variables ----------
 
-local badgeTierIds = require(script["pie-hiking-tiers"]["tiered-badges"])
+local badgeTierInfos: {BadgeTierInfo} = require(script["pie-hiking-tiers"]["tiered-badges"])
 
 local rankThresholds: {RankTreshold} = require(script["pie-hiking-tiers"]["tiered-ranks"])
 
-table.freeze(badgeTierIds)
+table.freeze(badgeTierInfos)
 table.freeze(rankThresholds)
+
+
+---------- Calculated variables ----------
+
+local badgeTierIds: {{number}} = {}
+
+for i = 1, 10 do
+	table.insert(badgeTierIds, {})
+end
+
+for _, badgeInfo in badgeTierInfos do
+	local badgeId = badgeInfo.badgeId
+	local tier = badgeInfo.tier
+
+	while tier > #badgeTierIds do
+		table.insert(badgeTierIds, {})
+	end
+	table.insert(badgeTierIds[tier], badgeId)
+end
+
+table.freeze(badgeTierIds)
 
 
 ---------- Module variables ----------

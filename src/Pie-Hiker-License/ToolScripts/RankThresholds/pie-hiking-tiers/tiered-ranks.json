@@ -29,8 +29,8 @@
 		"rankTitle": "A",
 		"conditions": [
 			{"badgeTier": 3, "minimumBadges": 1},
-			{"badgeTier": 2, "minimumBadges": 10},
-			{"badgeTier": 1, "minimumBadges": 5}
+			{"badgeTier": 2, "minimumBadges": 5},
+			{"badgeTier": 1, "minimumBadges": 10}
 		]
 	},
 	{
