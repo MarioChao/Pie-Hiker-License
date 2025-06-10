@@ -30,13 +30,13 @@ export type BadgeTierInfo = {
 }
 
 export type MinBadgeCondition = {
-	badgeTier: {number},
+	badgeTier: number,
 	minimumBadges: number,
 }
 
 export type RankTreshold = {
 	rankTitle: string,
-	conditions: {MinBadgeCondition}
+	conditions: {MinBadgeCondition},
 }
 
 
