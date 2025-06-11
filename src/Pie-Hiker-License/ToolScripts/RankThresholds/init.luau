@@ -50,31 +50,55 @@ table.freeze(badgeTierInfos)
 table.freeze(rankThresholds)
 
 
----------- Calculated variables ----------
+local badgeTierIds: {{number}}
 
-local badgeTierIds: {{number}} = {}
+local rankPriority: {[string]: number}
 
-for i = 1, 10 do
-	table.insert(badgeTierIds, {})
-end
 
-for _, badgeInfo in badgeTierInfos do
-	local badgeId = badgeInfo.badgeId
-	local tier = badgeInfo.tier
+---------- Set up functions ----------
 
-	while tier > #badgeTierIds do
+local function setUpBadgeTierIds()
+	badgeTierIds = {}
+	for i = 1, 10 do
 		table.insert(badgeTierIds, {})
 	end
-	table.insert(badgeTierIds[tier], badgeId)
+
+	for _, badgeInfo in badgeTierInfos do
+		local badgeId = badgeInfo.badgeId
+		local tier = badgeInfo.tier
+
+		while tier > #badgeTierIds do
+			table.insert(badgeTierIds, {})
+		end
+		table.insert(badgeTierIds[tier], badgeId)
+	end
 end
 
+local function setUpRankPriority()
+	rankPriority = {}
+	local maxIndex = #rankThresholds
+	for index, rankThreshold in rankThresholds do
+		rankPriority[rankThreshold.rankTitle] = maxIndex - index
+	end
+end
+
+
+---------- Calling / connecting functions ----------
+
+setUpBadgeTierIds()
 table.freeze(badgeTierIds)
+
+setUpRankPriority()
+table.freeze(rankPriority)
 
 
 ---------- Module variables ----------
 
+RankThresholds.badgeTierInfos = badgeTierInfos
 RankThresholds.badgeTierIds = badgeTierIds
+
 RankThresholds.rankThresholds = rankThresholds
+RankThresholds.rankPriority = rankPriority
 
 
 ---------- Return module ----------
