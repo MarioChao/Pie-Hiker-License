@@ -26,6 +26,7 @@ local RankThresholds = {}
 
 export type BadgeTierInfo = {
 	badgeId: number,
+	placeId: number,
 	tier: number,
 }
 
@@ -53,6 +54,8 @@ table.freeze(rankThresholds)
 local badgeTierIds: {{number}}
 
 local rankPriority: {[string]: number}
+
+local badgePlaceId: {[string]: number}
 
 
 ---------- Set up functions ----------
@@ -82,6 +85,15 @@ local function setUpRankPriority()
 	end
 end
 
+local function setUpBadgePlaceId()
+	badgePlaceId = {}
+	for _, badgeInfo in badgeTierInfos do
+		local badgeId = badgeInfo.badgeId
+		local placeId = badgeInfo.placeId
+		badgePlaceId[tostring(badgeId)] = placeId
+	end
+end
+
 
 ---------- Calling / connecting functions ----------
 
@@ -91,11 +103,15 @@ table.freeze(badgeTierIds)
 setUpRankPriority()
 table.freeze(rankPriority)
 
+setUpBadgePlaceId()
+table.freeze(badgePlaceId)
+
 
 ---------- Module variables ----------
 
 RankThresholds.badgeTierInfos = badgeTierInfos
 RankThresholds.badgeTierIds = badgeTierIds
+RankThresholds.badgePlaceId = badgePlaceId
 
 RankThresholds.rankThresholds = rankThresholds
 RankThresholds.rankPriority = rankPriority
