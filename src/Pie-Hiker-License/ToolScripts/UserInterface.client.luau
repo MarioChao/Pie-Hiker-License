@@ -19,7 +19,7 @@ local LocalPlayer = Players.LocalPlayer
 local PieHikerLicense_PlayerScripts = LocalPlayer.PlayerScripts:WaitForChild("PieHikerLicense_PlayerScripts")
 
 local CachedBadgeCheck = require(PieHikerLicense_PlayerScripts.CachedBadgeCheck or script.Parent.PlayerScripts.PieHikerLicense_PlayerScripts.CachedBadgeCheck)
-local RankThresholds = require(script.Parent.RankThresholds)
+local RankThresholds = require(script.Parent:WaitForChild("RankThresholds"))
 
 
 ---------- Instances ----------
