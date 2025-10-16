@@ -32,7 +32,7 @@ local PieHikerLicense_ScreenGui: typeof(Default_PieHikerLicense_ScreenGui)
 
 ---------- Variables  ----------
 
-local badgeTierIds = RankThresholds.badgeTierIds
+local badgeTierIds = RankThresholds.badgeTierIds :: {{number}}
 local rankThresholds = RankThresholds.rankThresholds
 
 local setUpUserInterface_throttle = false
@@ -65,13 +65,13 @@ local function countBadges(player: Player, badgeIds: {number})
 	return count
 end
 
-local function getRank()
+local function getRank(player: Player)
 	for _, rankThreshold in rankThresholds do
 		-- Check conditions
 		local conditionMet = true
 		for _, condition in rankThreshold.conditions do
 			-- Validate minimum badges
-			if countBadges(LocalPlayer, badgeTierIds[condition.badgeTier]) < condition.minimumBadges then
+			if countBadges(player, badgeTierIds[condition.badgeTier]) < condition.minimumBadges then
 				conditionMet = false
 				break
 			end
@@ -86,6 +86,16 @@ local function getRank()
 		return rankThreshold.rankTitle
 	end
 	return "???"
+end
+
+local function checkAllBadges(player: Player)
+	local allBadgeIds = {}
+	for _, badgeIds in badgeTierIds do
+		for _, badgeId in badgeIds do
+			table.insert(allBadgeIds, badgeId)
+		end
+	end
+	CachedBadgeCheck.userHasBadges(player.UserId, allBadgeIds)
 end
 
 
@@ -115,11 +125,14 @@ local function setUpUserInterface()
 		(PieHikerLicense_ScreenGui.LicenseFrame.Avatar_ImageLabel :: ImageLabel).Image = thumbnailContent
 	end
 
+	-- Check all badges
+	checkAllBadges(LocalPlayer)
+
 	-- Get details
 	local DetailsFrame = PieHikerLicense_ScreenGui.LicenseFrame.DetailsFrame
 
 	-- Set rank
-	DetailsFrame.RankFrame.Rank_TextLabel.Text = getRank()
+	DetailsFrame.RankFrame.Rank_TextLabel.Text = getRank(LocalPlayer)
 
 	-- Set info
 	DetailsFrame.InfoFrame.Id_TextLabel.Text = LocalPlayer.UserId
@@ -141,7 +154,7 @@ local function setUpUserInterface()
 		end
 
 		-- Check badges
-		if hasAllBadges(LocalPlayer,badgeIds) then
+		if hasAllBadges(LocalPlayer, badgeIds) then
 			table.insert(achievements, `All ({#badgeIds}) tier {tier}.`)
 		else
 			local count = countBadges(LocalPlayer, badgeIds)
