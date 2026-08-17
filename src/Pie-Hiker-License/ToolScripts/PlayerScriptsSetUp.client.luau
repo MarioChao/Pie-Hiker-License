@@ -1,4 +1,5 @@
 --!strict
+
 -- Player Scripts Set Up Script
 
 
@@ -7,26 +8,48 @@
 local Players = game:GetService("Players")
 
 
----------- Instances ----------
+---------- Constants ----------
 
-local LocalPlayer = Players.LocalPlayer
+local Constants = {}
 
-local ToolPlayerScripts = script.Parent.PlayerScripts
+Constants.localPlayer = Players.LocalPlayer
+Constants.playerScripts = Constants.localPlayer.PlayerScripts
+
+Constants.toolPlayerScripts = script.Parent:WaitForChild("PlayerScripts")
 
 
 ---------- Local functions ----------
 
-local function setUpPlayerScripts()
-	local PlayerScripts = LocalPlayer.PlayerScripts
-	for _, object in ToolPlayerScripts:GetChildren() do
-		if not PlayerScripts:FindFirstChild(object.Name) then
-			local newObject = object:Clone()
-			newObject.Parent = PlayerScripts
-		end
+local setUpPlayerScriptInstance
+local setUpPlayerScripts
+
+
+----- Player scripts -----
+
+setUpPlayerScriptInstance = function(object: Instance)
+	if not Constants.playerScripts:FindFirstChild(object.Name) then
+		local newObject = object:Clone()
+		newObject.Parent = Constants.playerScripts
 	end
 end
 
+setUpPlayerScripts = function()
+	task.defer(function()
+		for _, object in Constants.toolPlayerScripts:GetChildren() do
+			task.defer(setUpPlayerScriptInstance, object)
+		end
+	end)
+	Constants.toolPlayerScripts.ChildAdded:Connect(setUpPlayerScriptInstance)
+end
 
----------- Calling / connecting functions ----------
 
-setUpPlayerScripts()
+----- Main -----
+
+local function main()
+	setUpPlayerScripts()
+end
+
+
+---------- Calling function ----------
+
+main()

@@ -43,9 +43,10 @@ export type RankTreshold = {
 
 ---------- Variables ----------
 
-local badgeTierInfos: {BadgeTierInfo} = require(script["pie-hiking-tiers"]["tiered-badges"])
+local _PieHikingTiers = script:WaitForChild("pie-hiking-tiers")
+local badgeTierInfos: {BadgeTierInfo} = require(_PieHikingTiers:WaitForChild("tiered-badges"))
 
-local rankThresholds: {RankTreshold} = require(script["pie-hiking-tiers"]["tiered-ranks"])
+local rankThresholds: {RankTreshold} = require(_PieHikingTiers:WaitForChild("tiered-ranks"))
 
 table.freeze(badgeTierInfos)
 table.freeze(rankThresholds)

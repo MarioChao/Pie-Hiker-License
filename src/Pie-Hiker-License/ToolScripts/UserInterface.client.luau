@@ -1,10 +1,6 @@
 --!strict
+
 -- User Interface Script
-
-
----------- Tool ----------
-
-local Tool = script.Parent.Parent
 
 
 ---------- Services ----------
@@ -15,19 +11,29 @@ local Players = game:GetService("Players")
 
 ---------- Imports ----------
 
-local LocalPlayer = Players.LocalPlayer
-local PieHikerLicense_PlayerScripts = LocalPlayer.PlayerScripts:WaitForChild("PieHikerLicense_PlayerScripts")
+local _LocalPlayer = Players.LocalPlayer
+local _PieHikerLicense_PlayerScripts = _LocalPlayer.PlayerScripts:WaitForChild("PieHikerLicense_PlayerScripts")
 
-local CachedBadgeCheck = require(PieHikerLicense_PlayerScripts.CachedBadgeCheck or script.Parent.PlayerScripts.PieHikerLicense_PlayerScripts.CachedBadgeCheck)
+local _Tool_PlayerScripts = script.Parent:WaitForChild("PlayerScripts")
+local _Tool_PieHikerLicense_PlayerScripts = _Tool_PlayerScripts:WaitForChild("PieHikerLicense_PlayerScripts")
+local _Tool_CachedBadgeCheck = _Tool_PieHikerLicense_PlayerScripts:WaitForChild("CachedBadgeCheck")
+local CachedBadgeCheck = require(_PieHikerLicense_PlayerScripts:WaitForChild("CachedBadgeCheck") :: typeof(_Tool_CachedBadgeCheck))
 local RankThresholds = require(script.Parent:WaitForChild("RankThresholds"))
 
 
----------- Instances ----------
+---------- Constants ----------
 
-local ToolAssets = Tool:WaitForChild("ToolAssets")
-local Default_PieHikerLicense_ScreenGui = ToolAssets:WaitForChild("PieHikerLicense_ScreenGui")
+local Constants = {}
 
-local PieHikerLicense_ScreenGui: typeof(Default_PieHikerLicense_ScreenGui)
+Constants.localPlayer = _LocalPlayer
+
+Constants.tool = script.Parent.Parent
+do
+	local toolAssets = Constants.tool:WaitForChild("ToolAssets")
+	Constants.default_PieHikerLicense_ScreenGui = toolAssets:WaitForChild("PieHikerLicense_ScreenGui")
+end
+
+local PieHikerLicense_ScreenGui: typeof(Constants.default_PieHikerLicense_ScreenGui)
 
 
 ---------- Variables  ----------
@@ -103,10 +109,10 @@ end
 
 local function setUpScreenGui()
 	-- Initialize screen gui
-	PieHikerLicense_ScreenGui = LocalPlayer.PlayerGui:FindFirstChild("PieHikerLicense_ScreenGui")
+	PieHikerLicense_ScreenGui = Constants.localPlayer.PlayerGui:FindFirstChild("PieHikerLicense_ScreenGui")
 	if not PieHikerLicense_ScreenGui then
-		PieHikerLicense_ScreenGui = Default_PieHikerLicense_ScreenGui:Clone()
-		PieHikerLicense_ScreenGui.Parent = LocalPlayer.PlayerGui
+		PieHikerLicense_ScreenGui = Constants.default_PieHikerLicense_ScreenGui:Clone()
+		PieHikerLicense_ScreenGui.Parent = Constants.localPlayer.PlayerGui
 	end
 
 	-- Enable screen gui
@@ -120,22 +126,22 @@ local function setUpUserInterface()
 	end
 
 	-- Set avatar image
-	local thumbnailContent, thumbnailIsReady = getPlayerThumbnail(LocalPlayer)
+	local thumbnailContent, thumbnailIsReady = getPlayerThumbnail(Constants.localPlayer)
 	if thumbnailIsReady then
 		(PieHikerLicense_ScreenGui.LicenseFrame.Avatar_ImageLabel :: ImageLabel).Image = thumbnailContent
 	end
 
 	-- Check all badges
-	checkAllBadges(LocalPlayer)
+	checkAllBadges(Constants.localPlayer)
 
 	-- Get details
 	local DetailsFrame = PieHikerLicense_ScreenGui.LicenseFrame.DetailsFrame
 
 	-- Set rank
-	DetailsFrame.RankFrame.Rank_TextLabel.Text = getRank(LocalPlayer)
+	DetailsFrame.RankFrame.Rank_TextLabel.Text = getRank(Constants.localPlayer)
 
 	-- Set info
-	DetailsFrame.InfoFrame.Id_TextLabel.Text = LocalPlayer.UserId
+	DetailsFrame.InfoFrame.Id_TextLabel.Text = Constants.localPlayer.UserId
 
 
 	---------- Achievements ----------
@@ -154,10 +160,10 @@ local function setUpUserInterface()
 		end
 
 		-- Check badges
-		if hasAllBadges(LocalPlayer, badgeIds) then
+		if hasAllBadges(Constants.localPlayer, badgeIds) then
 			table.insert(achievements, `All ({#badgeIds}) tier {tier}.`)
 		else
-			local count = countBadges(LocalPlayer, badgeIds)
+			local count = countBadges(Constants.localPlayer, badgeIds)
 			table.insert(achievements, `({count}) tier {tier}.`)
 		end
 	end
@@ -180,7 +186,7 @@ local function setUpUserInterface()
 
 
 	-- Signature
-	PieHikerLicense_ScreenGui.LicenseFrame.Signature_TextLabel.Text = LocalPlayer.Name
+	PieHikerLicense_ScreenGui.LicenseFrame.Signature_TextLabel.Text = Constants.localPlayer.Name
 end
 
 
@@ -213,5 +219,5 @@ end
 
 ---------- Calling / connecting functions ----------
 
-Tool.Equipped:Connect(onToolEquipped)
-Tool.Unequipped:Connect(onToolUnequipped)
+Constants.tool.Equipped:Connect(onToolEquipped)
+Constants.tool.Unequipped:Connect(onToolUnequipped)

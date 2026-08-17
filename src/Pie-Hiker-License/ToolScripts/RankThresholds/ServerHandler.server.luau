@@ -4,7 +4,7 @@
 
 ---------- Instances ----------
 
-local RankThreshold_RemoteFunction = script.Parent.RankThreshold_RemoteFunction
+local RankThreshold_RemoteFunction = script.Parent:WaitForChild("RankThreshold_RemoteFunction")
 
 
 ---------- Imports ----------
