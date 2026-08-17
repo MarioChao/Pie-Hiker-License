@@ -1,5 +1,6 @@
 --!strict
--- Rank Thresholds Module Script
+
+-- Rank Thresholds
 
 
 ---------- Main module ----------
@@ -9,17 +10,12 @@ local RunService = game:GetService("RunService")
 -- If not a model
 if script.Parent.Parent then
 	if RunService:IsServer() then
-		-- For dynamic data loading, add a line that `requires` the asset id 106825359403933 and `returns` the result
+		-- For dynamic data loading, add a line that `requires` this asset and `returns` the result
 	else
 		local RankThreshold_RemoteFunction = script:WaitForChild("RankThreshold_RemoteFunction")
 		return RankThreshold_RemoteFunction:InvokeServer("Get Rank Thresholds")
 	end
 end
-
-
----------- Module ----------
-
-local RankThresholds = {}
 
 
 ---------- Types ----------
@@ -41,84 +37,94 @@ export type RankTreshold = {
 }
 
 
----------- Variables ----------
+---------- Constants ----------
 
-local _PieHikingTiers = script:WaitForChild("pie-hiking-tiers")
-local badgeTierInfos: {BadgeTierInfo} = require(_PieHikingTiers:WaitForChild("tiered-badges"))
+local Constants = {}
 
-local rankThresholds: {RankTreshold} = require(_PieHikingTiers:WaitForChild("tiered-ranks"))
+do
+	local _PieHikingTiers = script:WaitForChild("pie-hiking-tiers")
+	Constants.badgeTierInfos = require(_PieHikingTiers:WaitForChild("tiered-badges"))
+	Constants.rankThresholds = require(_PieHikingTiers:WaitForChild("tiered-ranks"))
+end
 
-table.freeze(badgeTierInfos)
-table.freeze(rankThresholds)
-
-
-local badgeTierIds: {{number}}
-
-local rankPriority: {[string]: number}
-
-local badgePlaceId: {[string]: number}
+table.freeze(Constants.badgeTierInfos)
+table.freeze(Constants.rankThresholds)
 
 
----------- Set up functions ----------
+---------- Globals ----------
+
+local Globals = {}
+
+Globals.badgeTierIds = {} :: {{number}}
+Globals.rankPriority = {} :: {[string]: number}
+Globals.badgePlaceId = {} :: {[string]: number}
+
+
+---------- Local functions ----------
 
 local function setUpBadgeTierIds()
-	badgeTierIds = {}
+	Globals.badgeTierIds = {}
 	for i = 1, 10 do
-		table.insert(badgeTierIds, {})
+		table.insert(Globals.badgeTierIds, {})
 	end
 
-	for _, badgeInfo in badgeTierInfos do
+	for _, badgeInfo in Constants.badgeTierInfos do
 		local badgeId = badgeInfo.badgeId
 		local tier = badgeInfo.tier
 
-		while tier > #badgeTierIds do
-			table.insert(badgeTierIds, {})
+		while tier > #Globals.badgeTierIds do
+			table.insert(Globals.badgeTierIds, {})
 		end
-		table.insert(badgeTierIds[tier], badgeId)
+		table.insert(Globals.badgeTierIds[tier], badgeId)
 	end
 end
 
 local function setUpRankPriority()
-	rankPriority = {}
-	local maxIndex = #rankThresholds
-	for index, rankThreshold in rankThresholds do
-		rankPriority[rankThreshold.rankTitle] = maxIndex - index
+	Globals.rankPriority = {}
+	local maxIndex = #Constants.rankThresholds
+	for index, rankThreshold in Constants.rankThresholds do
+		Globals.rankPriority[rankThreshold.rankTitle] = maxIndex - index
 	end
 end
 
 local function setUpBadgePlaceId()
-	badgePlaceId = {}
-	for _, badgeInfo in badgeTierInfos do
+	Globals.badgePlaceId = {}
+	for _, badgeInfo in Constants.badgeTierInfos do
 		local badgeId = badgeInfo.badgeId
 		local placeId = badgeInfo.placeId
-		badgePlaceId[tostring(badgeId)] = placeId
+		Globals.badgePlaceId[tostring(badgeId)] = placeId
 	end
 end
 
 
----------- Calling / connecting functions ----------
+---------- Calling functions ----------
 
 setUpBadgeTierIds()
-table.freeze(badgeTierIds)
+table.freeze(Globals.badgeTierIds)
 
 setUpRankPriority()
-table.freeze(rankPriority)
+table.freeze(Globals.rankPriority)
 
 setUpBadgePlaceId()
-table.freeze(badgePlaceId)
+table.freeze(Globals.badgePlaceId)
 
 
----------- Module variables ----------
+---------- Module ----------
 
-RankThresholds.badgeTierInfos = badgeTierInfos
-RankThresholds.badgeTierIds = badgeTierIds
-RankThresholds.badgePlaceId = badgePlaceId
+local RankThresholds = {}
 
-RankThresholds.rankThresholds = rankThresholds
-RankThresholds.rankPriority = rankPriority
+
+----- Module fields -----
+
+RankThresholds.badgeTierInfos = Constants.badgeTierInfos
+RankThresholds.badgeTierIds = Globals.badgeTierIds
+RankThresholds.badgePlaceId = Globals.badgePlaceId
+
+RankThresholds.rankThresholds = Constants.rankThresholds
+RankThresholds.rankPriority = Globals.rankPriority
 
 
 ---------- Return module ----------
 
+table.freeze(RankThresholds)
 return RankThresholds
-
